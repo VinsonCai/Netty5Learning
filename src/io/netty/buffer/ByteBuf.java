@@ -37,6 +37,8 @@ import java.nio.charset.UnsupportedCharsetException;
  * It is recommended to create a new buffer using the helper methods in
  * {@link Unpooled} rather than calling an individual implementation's
  * constructor.
+ * 
+ * 建议创建新的buffer时使用工具方法，而不是调用 各自的构造函数。
  *
  * <h3>Random Access Indexing</h3>
  *
@@ -45,6 +47,8 @@ import java.nio.charset.UnsupportedCharsetException;
  * It means the index of the first byte is always {@code 0} and the index of the last byte is
  * always {@link #capacity() capacity - 1}.  For example, to iterate all bytes of a buffer, you
  * can do the following, regardless of its internal implementation:
+ *
+ * 第一个byte的下标永远是从0开始，，而最后一个就是capacity-1
  *
  * <pre>
  * {@link ByteBuf} buffer = ...;
@@ -61,6 +65,8 @@ import java.nio.charset.UnsupportedCharsetException;
  * operation and {@link #writerIndex() writerIndex} for a write operation
  * respectively.  The following diagram shows how a buffer is segmented into
  * three areas by the two pointers:
+ *
+ * 有两个指针变量：readerIndex和writerIndex
  *
  * <pre>
  *      +-------------------+------------------+------------------+
@@ -79,10 +85,16 @@ import java.nio.charset.UnsupportedCharsetException;
  * read bytes.  If the argument of the read operation is also a
  * {@link ByteBuf} and no destination index is specified, the specified
  * buffer's {@link #writerIndex() writerIndex} is increased together.
+ * 
+ * 这就是数据存储的部分。任何以read或者skip开始的操作会获得或者路过当前readerIndex并增加它read的数量。
+ * 如果讲操作的参数也是个ByteBuf并且没有提供目标Index，那么该buffer的writerIndex也会相应增加。
+ * 
  * <p>
  * If there's not enough content left, {@link IndexOutOfBoundsException} is
  * raised.  The default value of newly allocated, wrapped or copied buffer's
  * {@link #readerIndex() readerIndex} is {@code 0}.
+ *
+ *如果存在不够的内容，就会抛出IndexOutOfBoundsException。
  *
  * <pre>
  * // Iterates the readable bytes of a buffer.
@@ -141,6 +153,8 @@ import java.nio.charset.UnsupportedCharsetException;
  *      |                  |                                      |
  * readerIndex (0) <= writerIndex (decreased)        <=        capacity
  * </pre>
+ * 
+ * 调用discardReadBytes（）会把readerIndex之前的所有空间用后面的数据依次左移。留下更多的可写空间。
  *
  * Please note that there is no guarantee about the content of writable bytes
  * after calling {@link #discardReadBytes()}.  The writable bytes will not be
@@ -154,6 +168,9 @@ import java.nio.charset.UnsupportedCharsetException;
  * It does not clear the buffer content (e.g. filling with {@code 0}) but just
  * clears the two pointers.  Please also note that the semantic of this
  * operation is different from {@link ByteBuffer#clear()}.
+ *
+ *通过调用 clear方法可以把readerIndex和writerIndex都重置为0.它并不清空数据，而只是重置指针。
+ *必须注意的是：这个操作与ByteBuffer的clear方法不一样。
  *
  * <pre>
  *  BEFORE clear()
