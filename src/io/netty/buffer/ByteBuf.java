@@ -38,7 +38,7 @@ import java.nio.charset.UnsupportedCharsetException;
  * {@link Unpooled} rather than calling an individual implementation's
  * constructor.
  * 
- * ½¨Òé´´½¨ĞÂµÄbufferÊ±Ê¹ÓÃ¹¤¾ß·½·¨£¬¶ø²»ÊÇµ÷ÓÃ ¸÷×ÔµÄ¹¹Ôìº¯Êı¡£
+ * å»ºè®®åˆ›å»ºæ–°çš„bufferæ—¶ä½¿ç”¨å·¥å…·æ–¹æ³•ï¼Œè€Œä¸æ˜¯è°ƒç”¨ å„è‡ªçš„æ„é€ å‡½æ•°ã€‚
  *
  * <h3>Random Access Indexing</h3>
  *
@@ -48,7 +48,7 @@ import java.nio.charset.UnsupportedCharsetException;
  * always {@link #capacity() capacity - 1}.  For example, to iterate all bytes of a buffer, you
  * can do the following, regardless of its internal implementation:
  *
- * µÚÒ»¸öbyteµÄÏÂ±êÓÀÔ¶ÊÇ´Ó0¿ªÊ¼£¬£¬¶ø×îºóÒ»¸ö¾ÍÊÇcapacity-1
+ * ç¬¬ä¸€ä¸ªbyteçš„ä¸‹æ ‡æ°¸è¿œæ˜¯ä»0å¼€å§‹ï¼Œï¼Œè€Œæœ€åä¸€ä¸ªå°±æ˜¯capacity-1
  *
  * <pre>
  * {@link ByteBuf} buffer = ...;
@@ -66,7 +66,7 @@ import java.nio.charset.UnsupportedCharsetException;
  * respectively.  The following diagram shows how a buffer is segmented into
  * three areas by the two pointers:
  *
- * ÓĞÁ½¸öÖ¸Õë±äÁ¿£ºreaderIndexºÍwriterIndex
+ * æœ‰ä¸¤ä¸ªæŒ‡é’ˆå˜é‡ï¼šreaderIndexå’ŒwriterIndex
  *
  * <pre>
  *      +-------------------+------------------+------------------+
@@ -86,15 +86,15 @@ import java.nio.charset.UnsupportedCharsetException;
  * {@link ByteBuf} and no destination index is specified, the specified
  * buffer's {@link #writerIndex() writerIndex} is increased together.
  * 
- * Õâ¾ÍÊÇÊı¾İ´æ´¢µÄ²¿·Ö¡£ÈÎºÎÒÔread»òÕßskip¿ªÊ¼µÄ²Ù×÷»á»ñµÃ»òÕßÂ·¹ıµ±Ç°readerIndex²¢Ôö¼ÓËüreadµÄÊıÁ¿¡£
- * Èç¹û½²²Ù×÷µÄ²ÎÊıÒ²ÊÇ¸öByteBuf²¢ÇÒÃ»ÓĞÌá¹©Ä¿±êIndex£¬ÄÇÃ´¸ÃbufferµÄwriterIndexÒ²»áÏàÓ¦Ôö¼Ó¡£
+ * è¿™å°±æ˜¯æ•°æ®å­˜å‚¨çš„éƒ¨åˆ†ã€‚ä»»ä½•ä»¥readæˆ–è€…skipå¼€å§‹çš„æ“ä½œä¼šè·å¾—æˆ–è€…è·¯è¿‡å½“å‰readerIndexå¹¶å¢åŠ å®ƒreadçš„æ•°é‡ã€‚
+ * å¦‚æœè®²æ“ä½œçš„å‚æ•°ä¹Ÿæ˜¯ä¸ªByteBufå¹¶ä¸”æ²¡æœ‰æä¾›ç›®æ ‡Indexï¼Œé‚£ä¹ˆè¯¥bufferçš„writerIndexä¹Ÿä¼šç›¸åº”å¢åŠ ã€‚
  * 
  * <p>
  * If there's not enough content left, {@link IndexOutOfBoundsException} is
  * raised.  The default value of newly allocated, wrapped or copied buffer's
  * {@link #readerIndex() readerIndex} is {@code 0}.
  *
- *Èç¹û´æÔÚ²»¹»µÄÄÚÈİ£¬¾Í»áÅ×³öIndexOutOfBoundsException¡£
+ *å¦‚æœå­˜åœ¨ä¸å¤Ÿçš„å†…å®¹ï¼Œå°±ä¼šæŠ›å‡ºIndexOutOfBoundsExceptionã€‚
  *
  * <pre>
  * // Iterates the readable bytes of a buffer.
@@ -154,7 +154,7 @@ import java.nio.charset.UnsupportedCharsetException;
  * readerIndex (0) <= writerIndex (decreased)        <=        capacity
  * </pre>
  * 
- * µ÷ÓÃdiscardReadBytes£¨£©»á°ÑreaderIndexÖ®Ç°µÄËùÓĞ¿Õ¼äÓÃºóÃæµÄÊı¾İÒÀ´Î×óÒÆ¡£ÁôÏÂ¸ü¶àµÄ¿ÉĞ´¿Õ¼ä¡£
+ * è°ƒç”¨discardReadBytesï¼ˆï¼‰ä¼šæŠŠreaderIndexä¹‹å‰çš„æ‰€æœ‰ç©ºé—´ç”¨åé¢çš„æ•°æ®ä¾æ¬¡å·¦ç§»ã€‚ç•™ä¸‹æ›´å¤šçš„å¯å†™ç©ºé—´ã€‚
  *
  * Please note that there is no guarantee about the content of writable bytes
  * after calling {@link #discardReadBytes()}.  The writable bytes will not be
@@ -169,8 +169,8 @@ import java.nio.charset.UnsupportedCharsetException;
  * clears the two pointers.  Please also note that the semantic of this
  * operation is different from {@link ByteBuffer#clear()}.
  *
- *Í¨¹ıµ÷ÓÃ clear·½·¨¿ÉÒÔ°ÑreaderIndexºÍwriterIndex¶¼ÖØÖÃÎª0.Ëü²¢²»Çå¿ÕÊı¾İ£¬¶øÖ»ÊÇÖØÖÃÖ¸Õë¡£
- *±ØĞë×¢ÒâµÄÊÇ£ºÕâ¸ö²Ù×÷ÓëByteBufferµÄclear·½·¨²»Ò»Ñù¡£
+ *é€šè¿‡è°ƒç”¨ clearæ–¹æ³•å¯ä»¥æŠŠreaderIndexå’ŒwriterIndexéƒ½é‡ç½®ä¸º0.å®ƒå¹¶ä¸æ¸…ç©ºæ•°æ®ï¼Œè€Œåªæ˜¯é‡ç½®æŒ‡é’ˆã€‚
+ *å¿…é¡»æ³¨æ„çš„æ˜¯ï¼šè¿™ä¸ªæ“ä½œä¸ByteBufferçš„clearæ–¹æ³•ä¸ä¸€æ ·ã€‚
  *
  * <pre>
  *  BEFORE clear()
