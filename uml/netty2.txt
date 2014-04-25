@@ -1,0 +1,2 @@
+1. 在unsafe（NioMessageUnsafe）开始读的时候，它会调用pipeline的fireChannelRead。然后这个pipeline会调用ChannelHandlerContext的invoker.invokeChannelRead。
+ChannelHandlerInvokerUtil。invokeChannelReadNow。然后ctx.handler().channelReadComplete(ctx);
