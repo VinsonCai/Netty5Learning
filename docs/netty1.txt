@@ -1,0 +1,20 @@
+
+
+ServerBootStrap 会有两个EventGroup。其中一个调用super.group(eventGroup);然后把child留给自己用。由此猜想，那个parent event group是负责读取消息的，而child eventGroup就负责处理读到的消息。
+
+
+1. 程序如何启动读数据线程？
+
+
+在ServerBootStrap调用bind方法时，就会注册当通道可用的监听器。然后当通道启动时，就开始读。其实这里是有检查config().isAutoRead()的，因为默认是true，所以当通道active时就会自动读数据了。
+
+2. 当一个channel读的数据不够时，我们是可以让它再去读多一些的。这个如果是在多条线程的话，是怎样处理的？
+
+
+3. 
+
+
+
+
+
+
