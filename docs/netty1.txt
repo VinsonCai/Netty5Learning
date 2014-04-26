@@ -2,6 +2,9 @@
 
 ServerBootStrap 会有两个EventGroup。其中一个调用super.group(eventGroup);然后把child留给自己用。由此猜想，那个parent event group是负责读取消息的，而child eventGroup就负责处理读到的消息。
 
+在unsafe（NioMessageUnsafe）开始读的时候，它会调用pipeline的fireChannelRead。然后这个pipeline会调用ChannelHandlerContext的fireChannelRead。ChannelHandlerContext会在链表中查找到一个合适的ChannelHandlerInvoker，然后调用 invoker.invokeChannelRead。
+ChannelHandlerInvokerUtil调用invokeChannelReadNow。然后调用ChannelHandlerContext的handler()查找合适的handler去具体读。ctx.handler().channelRead（其中这里的handler就是返回SimpleChannelInboundHandler）.然后由SimpleChannelInboundHandler去调用抽象函数messageReceived。由子类去实现该方法。
+
 
 1. 程序如何启动读数据线程？
 
