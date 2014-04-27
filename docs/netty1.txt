@@ -17,7 +17,14 @@ ChannelHandlerInvokerUtil调用invokeChannelReadNow。然后调用ChannelHandler
 3. 
 
 
-
-
-
+分类：
+Bootstrap：是作为程序的加载入口
+Unsafe：网络操作的IO实现类，像最终还是会出调用到NioByteUnsafe这样的类去做具体的工作。
+ChannelPipeline：管理那些handler的类。像我们的把一个handler加入到列表时，就是加入到pipeline里面的。
+HandlerContext：管理Handler的上下文。比如channel信息之类的。
+ChannelHandlerInvoker：这是一个调用器，具体作用还不详。
+ChannelHandler：就是一些处理信息的handler类。由一个责任链的方式把所有handler组合起来，每个Handler用不同的方式处理信息。
+Future:异步操作的结果引用。这个跟java API里面的那个Future是差不多功能，但是在这里应该是有所加强的。
+Promise：这个接口继承了Future，它是一个可以修改结果的Future，在系统里的使用挺多的。
+EventLoopGroup：这些负责处理多线程的管理的。
 
