@@ -28,3 +28,12 @@ Future:异步操作的结果引用。这个跟java API里面的那个Future是�
 Promise：这个接口继承了Future，它是一个可以修改结果的Future，在系统里的使用挺多的。
 EventLoopGroup：这些负责处理多线程的管理的。
 
+
+
+NioEventLoop对Selector有优化.
+
+它在run方法里面，会循环去调用select函数，当有事件返回的时候，就调用processSelectedKeysOptimized或者processSelectedKeysPlain去处理。
+这两个函数会调用processSelectedKey去读取数据。而这个函数就会调用NioUnsafe去做具体的读取工作。
+
+
+
