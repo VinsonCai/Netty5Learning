@@ -40,7 +40,7 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
 在ServerBootstrap调用listen的时候，会异步调用到createChannel()方法。这个方法会调用上面提到的next()去获取一个EventLoop(其实这个就是一个SingleThreadEventLoop)，然后channelFactory().newChannel(eventLoop, childGroup);这里就是给每个channel分配一个eventloop和一个EventGroup。
 在API里面，有EventLoop和EventLoopGroup，这两个东西在上面的分析里面体现出来了。
 
-
+有一个GlobalEventExecutor，里面有一个函数public boolean inEventLoop(Thread thread)。在读取数据的时候，看到几次会判断当前线程是否在inEventLoop。感觉有点像UI线程的样子。
 
 
 
