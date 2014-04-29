@@ -41,7 +41,11 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
 在API里面，有EventLoop和EventLoopGroup，这两个东西在上面的分析里面体现出来了。
 
 有一个GlobalEventExecutor，里面有一个函数public boolean inEventLoop(Thread thread)。在读取数据的时候，看到几次会判断当前线程是否在inEventLoop。感觉有点像UI线程的样子。
-
+在GlobalEventExecutor里面，那个所谓的UI线程会循环去获取一个任务Runnable task = takeTask()去执行。
+在takeTask()里面，它会先去延时任务列表里面取，
+ 1）如果没有延时任务（ScheduledFutureTask），就去taskQueue里面获取（这里的taskQueue是一个BlockingQueue，所以这里有可能阻塞到有任务来时）
+ 2）如果有延时任务，就获取延时的时间delayNanos（用纳秒表示），如果delayNanos>0然后就尝试在delayNanos的时间内从taskQueue里面获取任务。不然就直接在taskQueue里面poll().
+   2.1)如果这两种情况都没有获取到任务，就从延时任务列表里面取一个任务放到taskQueue里面。然后把它取出来返回回去。这里如果还是为空，就继续前面的操作。
 
 
 
