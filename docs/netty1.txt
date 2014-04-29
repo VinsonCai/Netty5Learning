@@ -36,4 +36,15 @@ NioEventLoop对Selector有优化.
 这两个函数会调用processSelectedKey去读取数据。而这个函数就会调用NioUnsafe去做具体的读取工作。
 
 
+MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器数量的2倍和系统配置的个数间取个最大值。在这个线程数组里面，每次调用next()的时候，就循环在这里获取一个引用。
+在ServerBootstrap调用listen的时候，会异步调用到createChannel()方法。这个方法会调用上面提到的next()去获取一个EventLoop(其实这个就是一个SingleThreadEventLoop)，然后channelFactory().newChannel(eventLoop, childGroup);这里就是给每个channel分配一个eventloop和一个EventGroup。
+在API里面，有EventLoop和EventLoopGroup，这两个东西在上面的分析里面体现出来了。
+
+
+
+
+
+
+
+
 
