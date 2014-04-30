@@ -52,6 +52,8 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
 
 每个EventExecutor的inEventLoop()最终还是调用到GlobalEventExecutor的inEventLoop()。目前的发现是如此，但不敢肯定。
    
+当NioServerSocketChannel.doReadMessages的时候，它会给每一个连接过来的客户端创建一个NioSocketChannel，然后给它分配一个EventLoopGroup。
+
 
 
 VoidChannel是什么？
