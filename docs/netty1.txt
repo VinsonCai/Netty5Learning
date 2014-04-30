@@ -50,7 +50,11 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
    
 每次在判断是否executor.inEventLoop(),如果是就马上执行，不然就尝试safeExecuteOutbound（Runnable），该函数会调用 executor.execute(task)。
 
+每个EventExecutor的inEventLoop()最终还是调用到GlobalEventExecutor的inEventLoop()。目前的发现是如此，但不敢肯定。
    
+
+
+VoidChannel是什么？
 
 
 
