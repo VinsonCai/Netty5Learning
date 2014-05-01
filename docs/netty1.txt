@@ -55,9 +55,16 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
 当NioServerSocketChannel.doReadMessages的时候，它会给每一个连接过来的客户端创建一个NioSocketChannel，然后给它分配一个EventLoopGroup。
 
 
+在程序开始，我们会声明两个EventGroup，一个作为Boss，另一个作为Worker。每一个EventGroup是由很多的EventLoop组成。
+在EcentLoop里面会循环地去调用NioUnsafe去读取数据。当读取到数据的时候，就会调用ChannelHandlerContext.fireChannelRead().
+ChannelHandlerContext.fireChannelRead会调用DefaultChannelHandlerInvoker.invokeChannelRead，在这里会判断当前线程是不是inEventLoop里面。
+
+
+
 
 VoidChannel是什么？
 
+AbstractNioMessageChannel和AbstractNioByteChannel的区别是什么？好像一个是Server的读数据，另一个是Client端的。
 
 
 
