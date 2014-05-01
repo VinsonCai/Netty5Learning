@@ -58,7 +58,7 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
 在程序开始，我们会声明两个EventGroup，一个作为Boss，另一个作为Worker。每一个EventGroup是由很多的EventLoop组成。
 在EcentLoop里面会循环地去调用NioUnsafe去读取数据。当读取到数据的时候，就会调用ChannelHandlerContext.fireChannelRead().
 ChannelHandlerContext.fireChannelRead会调用DefaultChannelHandlerInvoker.invokeChannelRead，在这里会判断当前线程是不是inEventLoop里面。
-
+然后就调用Handler去读数据了。
 
 
 

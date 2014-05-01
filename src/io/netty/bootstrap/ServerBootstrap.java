@@ -42,342 +42,344 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * {@link Bootstrap} sub-class which allows easy bootstrap of {@link ServerChannel}
- *
+ * 
  */
 public final class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerChannel> {
 
-    private static final InternalLogger logger = InternalLoggerFactory.getInstance(ServerBootstrap.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ServerBootstrap.class);
 
-    private volatile ServerChannelFactory<? extends ServerChannel> channelFactory;
-    private final Map<ChannelOption<?>, Object> childOptions = new LinkedHashMap<ChannelOption<?>, Object>();
-    private final Map<AttributeKey<?>, Object> childAttrs = new LinkedHashMap<AttributeKey<?>, Object>();
-    private volatile EventLoopGroup childGroup;
-    private volatile ChannelHandler childHandler;
+	private volatile ServerChannelFactory<? extends ServerChannel> channelFactory;
+	private final Map<ChannelOption<?>, Object> childOptions = new LinkedHashMap<ChannelOption<?>, Object>();
+	private final Map<AttributeKey<?>, Object> childAttrs = new LinkedHashMap<AttributeKey<?>, Object>();
+	private volatile EventLoopGroup childGroup;
+	private volatile ChannelHandler childHandler;
 
-    public ServerBootstrap() { }
+	public ServerBootstrap() {
+	}
 
-    private ServerBootstrap(ServerBootstrap bootstrap) {
-        super(bootstrap);
-        channelFactory = bootstrap.channelFactory;
-        childGroup = bootstrap.childGroup;
-        childHandler = bootstrap.childHandler;
-        synchronized (bootstrap.childOptions) {
-            childOptions.putAll(bootstrap.childOptions);
-        }
-        synchronized (bootstrap.childAttrs) {
-            childAttrs.putAll(bootstrap.childAttrs);
-        }
-    }
+	private ServerBootstrap(ServerBootstrap bootstrap) {
+		super(bootstrap);
+		channelFactory = bootstrap.channelFactory;
+		childGroup = bootstrap.childGroup;
+		childHandler = bootstrap.childHandler;
+		synchronized (bootstrap.childOptions) {
+			childOptions.putAll(bootstrap.childOptions);
+		}
+		synchronized (bootstrap.childAttrs) {
+			childAttrs.putAll(bootstrap.childAttrs);
+		}
+	}
 
-    /**
-     * The {@link Class} which is used to create {@link Channel} instances from.
-     * You either use this or {@link #channelFactory(ServerChannelFactory)} if your
-     * {@link Channel} implementation has no no-args constructor.
-     */
-    public ServerBootstrap channel(Class<? extends ServerChannel> channelClass) {
-        if (channelClass == null) {
-            throw new NullPointerException("channelClass");
-        }
-        return channelFactory(new ServerBootstrapChannelFactory<ServerChannel>(channelClass));
-    }
+	/**
+	 * The {@link Class} which is used to create {@link Channel} instances from. You either use this or
+	 * {@link #channelFactory(ServerChannelFactory)} if your {@link Channel} implementation has no no-args constructor.
+	 */
+	public ServerBootstrap channel(Class<? extends ServerChannel> channelClass) {
+		if (channelClass == null) {
+			throw new NullPointerException("channelClass");
+		}
+		return channelFactory(new ServerBootstrapChannelFactory<ServerChannel>(channelClass));
+	}
 
-    /**
-     * {@link ChannelFactory} which is used to create {@link Channel} instances from
-     * when calling {@link #bind()}. This method is usually only used if {@link #channel(Class)}
-     * is not working for you because of some more complex needs. If your {@link Channel} implementation
-     * has a no-args constructor, its highly recommend to just use {@link #channel(Class)} for
-     * simplify your code.
-     */
-    public ServerBootstrap channelFactory(ServerChannelFactory<? extends ServerChannel> channelFactory) {
-        if (channelFactory == null) {
-            throw new NullPointerException("channelFactory");
-        }
-        if (this.channelFactory != null) {
-            throw new IllegalStateException("channelFactory set already");
-        }
+	/**
+	 * {@link ChannelFactory} which is used to create {@link Channel} instances from when calling {@link #bind()}. This
+	 * method is usually only used if {@link #channel(Class)} is not working for you because of some more complex needs.
+	 * If your {@link Channel} implementation has a no-args constructor, its highly recommend to just use
+	 * {@link #channel(Class)} for simplify your code.
+	 */
+	public ServerBootstrap channelFactory(ServerChannelFactory<? extends ServerChannel> channelFactory) {
+		if (channelFactory == null) {
+			throw new NullPointerException("channelFactory");
+		}
+		if (this.channelFactory != null) {
+			throw new IllegalStateException("channelFactory set already");
+		}
 
-        this.channelFactory = channelFactory;
-        return this;
-    }
+		this.channelFactory = channelFactory;
+		return this;
+	}
 
-    @Override
-    Channel createChannel() {
-        EventLoop eventLoop = group().next();
-        return channelFactory().newChannel(eventLoop, childGroup);
-    }
+	@Override
+	Channel createChannel() {
+		EventLoop eventLoop = group().next();
+		return channelFactory().newChannel(eventLoop, childGroup);
+	}
 
-    ServerChannelFactory<? extends ServerChannel> channelFactory() {
-        return channelFactory;
-    }
+	ServerChannelFactory<? extends ServerChannel> channelFactory() {
+		return channelFactory;
+	}
 
-    /**
-     * Specify the {@link EventLoopGroup} which is used for the parent (acceptor) and the child (client).
-     */
-    @Override
-    public ServerBootstrap group(EventLoopGroup group) {
-        return group(group, group);
-    }
+	/**
+	 * Specify the {@link EventLoopGroup} which is used for the parent (acceptor) and the child (client).
+	 */
+	@Override
+	public ServerBootstrap group(EventLoopGroup group) {
+		return group(group, group);
+	}
 
-    /**
-     * Set the {@link EventExecutorGroup} for the parent (acceptor) and the child (client). These
-     * {@link EventExecutorGroup}'s are used to handle all the events and IO for {@link SocketChannel} and
-     * {@link Channel}'s.
-     */
-    public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
-        super.group(parentGroup);
-        if (childGroup == null) {
-            throw new NullPointerException("childGroup");
-        }
-        if (this.childGroup != null) {
-            throw new IllegalStateException("childGroup set already");
-        }
-        this.childGroup = childGroup;
-        return this;
-    }
+	/**
+	 * Set the {@link EventExecutorGroup} for the parent (acceptor) and the child (client). These
+	 * {@link EventExecutorGroup}'s are used to handle all the events and IO for {@link SocketChannel} and
+	 * {@link Channel}'s.
+	 */
+	public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
+		super.group(parentGroup);
+		logger.info("boss:" + parentGroup + ", worker:" + childGroup);
+		if (childGroup == null) {
+			throw new NullPointerException("childGroup");
+		}
+		if (this.childGroup != null) {
+			throw new IllegalStateException("childGroup set already");
+		}
+		this.childGroup = childGroup;
+		return this;
+	}
 
-    /**
-     * Allow to specify a {@link ChannelOption} which is used for the {@link Channel} instances once they get created
-     * (after the acceptor accepted the {@link Channel}). Use a value of {@code null} to remove a previous set
-     * {@link ChannelOption}.
-     */
-    public <T> ServerBootstrap childOption(ChannelOption<T> childOption, T value) {
-        if (childOption == null) {
-            throw new NullPointerException("childOption");
-        }
-        if (value == null) {
-            synchronized (childOptions) {
-                childOptions.remove(childOption);
-            }
-        } else {
-            synchronized (childOptions) {
-                childOptions.put(childOption, value);
-            }
-        }
-        return this;
-    }
+	/**
+	 * Allow to specify a {@link ChannelOption} which is used for the {@link Channel} instances once they get created
+	 * (after the acceptor accepted the {@link Channel}). Use a value of {@code null} to remove a previous set
+	 * {@link ChannelOption}.
+	 */
+	public <T> ServerBootstrap childOption(ChannelOption<T> childOption, T value) {
+		if (childOption == null) {
+			throw new NullPointerException("childOption");
+		}
+		if (value == null) {
+			synchronized (childOptions) {
+				childOptions.remove(childOption);
+			}
+		} else {
+			synchronized (childOptions) {
+				childOptions.put(childOption, value);
+			}
+		}
+		return this;
+	}
 
-    /**
-     * Set the specific {@link AttributeKey} with the given value on every child {@link Channel}. If the value is
-     * {@code null} the {@link AttributeKey} is removed
-     */
-    public <T> ServerBootstrap childAttr(AttributeKey<T> childKey, T value) {
-        if (childKey == null) {
-            throw new NullPointerException("childKey");
-        }
-        if (value == null) {
-            childAttrs.remove(childKey);
-        } else {
-            childAttrs.put(childKey, value);
-        }
-        return this;
-    }
+	/**
+	 * Set the specific {@link AttributeKey} with the given value on every child {@link Channel}. If the value is
+	 * {@code null} the {@link AttributeKey} is removed
+	 */
+	public <T> ServerBootstrap childAttr(AttributeKey<T> childKey, T value) {
+		if (childKey == null) {
+			throw new NullPointerException("childKey");
+		}
+		if (value == null) {
+			childAttrs.remove(childKey);
+		} else {
+			childAttrs.put(childKey, value);
+		}
+		return this;
+	}
 
-    /**
-     * Set the {@link ChannelHandler} which is used to serve the request for the {@link Channel}'s.
-     */
-    public ServerBootstrap childHandler(ChannelHandler childHandler) {
-        if (childHandler == null) {
-            throw new NullPointerException("childHandler");
-        }
-        this.childHandler = childHandler;
-        return this;
-    }
+	/**
+	 * Set the {@link ChannelHandler} which is used to serve the request for the {@link Channel}'s.
+	 */
+	public ServerBootstrap childHandler(ChannelHandler childHandler) {
+		if (childHandler == null) {
+			throw new NullPointerException("childHandler");
+		}
+		this.childHandler = childHandler;
+		return this;
+	}
 
-    /**
-     * Return the configured {@link EventLoopGroup} which will be used for the child channels or {@code null}
-     * if non is configured yet.
-     */
-    public EventLoopGroup childGroup() {
-        return childGroup;
-    }
+	/**
+	 * Return the configured {@link EventLoopGroup} which will be used for the child channels or {@code null} if non is
+	 * configured yet.
+	 */
+	public EventLoopGroup childGroup() {
+		return childGroup;
+	}
 
-    @Override
-    void init(Channel channel) throws Exception {
-        final Map<ChannelOption<?>, Object> options = options();
-        synchronized (options) {
-            channel.config().setOptions(options);
-        }
+	@Override
+	void init(Channel channel) throws Exception {
+		final Map<ChannelOption<?>, Object> options = options();
+		synchronized (options) {
+			channel.config().setOptions(options);
+		}
 
-        final Map<AttributeKey<?>, Object> attrs = attrs();
-        synchronized (attrs) {
-            for (Entry<AttributeKey<?>, Object> e: attrs.entrySet()) {
-                @SuppressWarnings("unchecked")
-                AttributeKey<Object> key = (AttributeKey<Object>) e.getKey();
-                channel.attr(key).set(e.getValue());
-            }
-        }
+		final Map<AttributeKey<?>, Object> attrs = attrs();
+		synchronized (attrs) {
+			for (Entry<AttributeKey<?>, Object> e : attrs.entrySet()) {
+				@SuppressWarnings("unchecked")
+				AttributeKey<Object> key = (AttributeKey<Object>) e.getKey();
+				channel.attr(key).set(e.getValue());
+			}
+		}
 
-        ChannelPipeline p = channel.pipeline();
-        if (handler() != null) {
-            p.addLast(handler());
-        }
+		ChannelPipeline p = channel.pipeline();
+		if (handler() != null) {
+			p.addLast(handler());
+		}
 
-        final ChannelHandler currentChildHandler = childHandler;
-        final Entry<ChannelOption<?>, Object>[] currentChildOptions;
-        final Entry<AttributeKey<?>, Object>[] currentChildAttrs;
-        synchronized (childOptions) {
-            currentChildOptions = childOptions.entrySet().toArray(newOptionArray(childOptions.size()));
-        }
-        synchronized (childAttrs) {
-            currentChildAttrs = childAttrs.entrySet().toArray(newAttrArray(childAttrs.size()));
-        }
+		final ChannelHandler currentChildHandler = childHandler;
+		final Entry<ChannelOption<?>, Object>[] currentChildOptions;
+		final Entry<AttributeKey<?>, Object>[] currentChildAttrs;
+		synchronized (childOptions) {
+			currentChildOptions = childOptions.entrySet().toArray(newOptionArray(childOptions.size()));
+		}
+		synchronized (childAttrs) {
+			currentChildAttrs = childAttrs.entrySet().toArray(newAttrArray(childAttrs.size()));
+		}
 
-        p.addLast(new ChannelInitializer<Channel>() {
-            @Override
-            public void initChannel(Channel ch) throws Exception {
-                ch.pipeline().addLast(new ServerBootstrapAcceptor(currentChildHandler, currentChildOptions,
-                        currentChildAttrs));
-            }
-        });
-    }
+		p.addLast(new ChannelInitializer<Channel>() {
+			@Override
+			public void initChannel(Channel ch) throws Exception {
+				ch.pipeline().addLast(new ServerBootstrapAcceptor(currentChildHandler, currentChildOptions,
+						currentChildAttrs));
+			}
+		});
+	}
 
-    @Override
-    public ServerBootstrap validate() {
-        super.validate();
-        if (childHandler == null) {
-            throw new IllegalStateException("childHandler not set");
-        }
-        if (childGroup == null) {
-            logger.warn("childGroup is not set. Using parentGroup instead.");
-            childGroup = group();
-        }
-        return this;
-    }
+	@Override
+	public ServerBootstrap validate() {
+		super.validate();
+		if (childHandler == null) {
+			throw new IllegalStateException("childHandler not set");
+		}
+		if (childGroup == null) {
+			logger.warn("childGroup is not set. Using parentGroup instead.");
+			childGroup = group();
+		}
+		return this;
+	}
 
-    @SuppressWarnings("unchecked")
-    private static Entry<ChannelOption<?>, Object>[] newOptionArray(int size) {
-        return new Entry[size];
-    }
+	@SuppressWarnings("unchecked")
+	private static Entry<ChannelOption<?>, Object>[] newOptionArray(int size) {
+		return new Entry[size];
+	}
 
-    @SuppressWarnings("unchecked")
-    private static Entry<AttributeKey<?>, Object>[] newAttrArray(int size) {
-        return new Entry[size];
-    }
+	@SuppressWarnings("unchecked")
+	private static Entry<AttributeKey<?>, Object>[] newAttrArray(int size) {
+		return new Entry[size];
+	}
 
-    private static class ServerBootstrapAcceptor extends ChannelHandlerAdapter {
+	private static class ServerBootstrapAcceptor extends ChannelHandlerAdapter {
 
-        private final ChannelHandler childHandler;
-        private final Entry<ChannelOption<?>, Object>[] childOptions;
-        private final Entry<AttributeKey<?>, Object>[] childAttrs;
+		private final ChannelHandler childHandler;
+		private final Entry<ChannelOption<?>, Object>[] childOptions;
+		private final Entry<AttributeKey<?>, Object>[] childAttrs;
 
-        ServerBootstrapAcceptor(ChannelHandler childHandler, Entry<ChannelOption<?>, Object>[] childOptions,
-                Entry<AttributeKey<?>, Object>[] childAttrs) {
-            this.childHandler = childHandler;
-            this.childOptions = childOptions;
-            this.childAttrs = childAttrs;
-        }
+		ServerBootstrapAcceptor(ChannelHandler childHandler, Entry<ChannelOption<?>, Object>[] childOptions,
+				Entry<AttributeKey<?>, Object>[] childAttrs) {
+			this.childHandler = childHandler;
+			this.childOptions = childOptions;
+			this.childAttrs = childAttrs;
+		}
 
-        @Override
-        @SuppressWarnings("unchecked")
-        public void channelRead(ChannelHandlerContext ctx, Object msg) {
-            Channel child = (Channel) msg;
+		@Override
+		@SuppressWarnings("unchecked")
+		public void channelRead(ChannelHandlerContext ctx, Object msg) {
+			logger.debug("channel read...");
+			Channel child = (Channel) msg;
 
-            child.pipeline().addLast(childHandler);
+			child.pipeline().addLast(childHandler);
 
-            for (Entry<ChannelOption<?>, Object> e: childOptions) {
-                try {
-                    if (!child.config().setOption((ChannelOption<Object>) e.getKey(), e.getValue())) {
-                        logger.warn("Unknown channel option: " + e);
-                    }
-                } catch (Throwable t) {
-                    logger.warn("Failed to set a channel option: " + child, t);
-                }
-            }
+			for (Entry<ChannelOption<?>, Object> e : childOptions) {
+				try {
+					if (!child.config().setOption((ChannelOption<Object>) e.getKey(), e.getValue())) {
+						logger.warn("Unknown channel option: " + e);
+					}
+				} catch (Throwable t) {
+					logger.warn("Failed to set a channel option: " + child, t);
+				}
+			}
 
-            for (Entry<AttributeKey<?>, Object> e: childAttrs) {
-                child.attr((AttributeKey<Object>) e.getKey()).set(e.getValue());
-            }
+			for (Entry<AttributeKey<?>, Object> e : childAttrs) {
+				child.attr((AttributeKey<Object>) e.getKey()).set(e.getValue());
+			}
 
-            child.unsafe().register(child.newPromise());
-        }
+			child.unsafe().register(child.newPromise());
+		}
 
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-            final ChannelConfig config = ctx.channel().config();
-            if (config.isAutoRead()) {
-                // stop accept new connections for 1 second to allow the channel to recover
-                // See https://github.com/netty/netty/issues/1328
-                config.setAutoRead(false);
-                ctx.channel().eventLoop().schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                       config.setAutoRead(true);
-                    }
-                }, 1, TimeUnit.SECONDS);
-            }
-            // still let the exceptionCaught event flow through the pipeline to give the user
-            // a chance to do something with it
-            ctx.fireExceptionCaught(cause);
-        }
-    }
+		@Override
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+			final ChannelConfig config = ctx.channel().config();
+			if (config.isAutoRead()) {
+				// stop accept new connections for 1 second to allow the channel to recover
+				// See https://github.com/netty/netty/issues/1328
+				config.setAutoRead(false);
+				ctx.channel().eventLoop().schedule(new Runnable() {
+					@Override
+					public void run() {
+						config.setAutoRead(true);
+					}
+				}, 1, TimeUnit.SECONDS);
+			}
+			// still let the exceptionCaught event flow through the pipeline to give the user
+			// a chance to do something with it
+			ctx.fireExceptionCaught(cause);
+		}
+	}
 
-    @Override
-    @SuppressWarnings("CloneDoesntCallSuperClone")
-    public ServerBootstrap clone() {
-        return new ServerBootstrap(this);
-    }
+	@Override
+	@SuppressWarnings("CloneDoesntCallSuperClone")
+	public ServerBootstrap clone() {
+		return new ServerBootstrap(this);
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder(super.toString());
-        buf.setLength(buf.length() - 1);
-        buf.append(", ");
-        if (childGroup != null) {
-            buf.append("childGroup: ");
-            buf.append(StringUtil.simpleClassName(childGroup));
-            buf.append(", ");
-        }
-        synchronized (childOptions) {
-            if (!childOptions.isEmpty()) {
-                buf.append("childOptions: ");
-                buf.append(childOptions);
-                buf.append(", ");
-            }
-        }
-        synchronized (childAttrs) {
-            if (!childAttrs.isEmpty()) {
-                buf.append("childAttrs: ");
-                buf.append(childAttrs);
-                buf.append(", ");
-            }
-        }
-        if (childHandler != null) {
-            buf.append("childHandler: ");
-            buf.append(childHandler);
-            buf.append(", ");
-        }
-        if (buf.charAt(buf.length() - 1) == '(') {
-            buf.append(')');
-        } else {
-            buf.setCharAt(buf.length() - 2, ')');
-            buf.setLength(buf.length() - 1);
-        }
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder(super.toString());
+		buf.setLength(buf.length() - 1);
+		buf.append(", ");
+		if (childGroup != null) {
+			buf.append("childGroup: ");
+			buf.append(StringUtil.simpleClassName(childGroup));
+			buf.append(", ");
+		}
+		synchronized (childOptions) {
+			if (!childOptions.isEmpty()) {
+				buf.append("childOptions: ");
+				buf.append(childOptions);
+				buf.append(", ");
+			}
+		}
+		synchronized (childAttrs) {
+			if (!childAttrs.isEmpty()) {
+				buf.append("childAttrs: ");
+				buf.append(childAttrs);
+				buf.append(", ");
+			}
+		}
+		if (childHandler != null) {
+			buf.append("childHandler: ");
+			buf.append(childHandler);
+			buf.append(", ");
+		}
+		if (buf.charAt(buf.length() - 1) == '(') {
+			buf.append(')');
+		} else {
+			buf.setCharAt(buf.length() - 2, ')');
+			buf.setLength(buf.length() - 1);
+		}
 
-        return buf.toString();
-    }
+		return buf.toString();
+	}
 
-    private static final class ServerBootstrapChannelFactory<T extends ServerChannel>
-            implements ServerChannelFactory<T> {
+	private static final class ServerBootstrapChannelFactory<T extends ServerChannel>
+			implements ServerChannelFactory<T> {
 
-        private final Class<? extends T> clazz;
+		private final Class<? extends T> clazz;
 
-        ServerBootstrapChannelFactory(Class<? extends T> clazz) {
-            this.clazz = clazz;
-        }
+		ServerBootstrapChannelFactory(Class<? extends T> clazz) {
+			this.clazz = clazz;
+		}
 
-        @Override
-        public T newChannel(EventLoop eventLoop, EventLoopGroup childGroup) {
-            try {
-                Constructor<? extends T> constructor = clazz.getConstructor(EventLoop.class, EventLoopGroup.class);
-                return constructor.newInstance(eventLoop, childGroup);
-            } catch (Throwable t) {
-                throw new ChannelException("Unable to create Channel from class " + clazz, t);
-            }
-        }
+		@Override
+		public T newChannel(EventLoop eventLoop, EventLoopGroup childGroup) {
+			logger.debug("create new channel");
+			try {
+				Constructor<? extends T> constructor = clazz.getConstructor(EventLoop.class, EventLoopGroup.class);
+				return constructor.newInstance(eventLoop, childGroup);
+			} catch (Throwable t) {
+				throw new ChannelException("Unable to create Channel from class " + clazz, t);
+			}
+		}
 
-        @Override
-        public String toString() {
-            return StringUtil.simpleClassName(clazz) + ".class";
-        }
-    }
+		@Override
+		public String toString() {
+			return StringUtil.simpleClassName(clazz) + ".class";
+		}
+	}
 }
