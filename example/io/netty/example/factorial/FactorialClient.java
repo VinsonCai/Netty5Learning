@@ -53,7 +53,7 @@ public class FactorialClient {
 
 			// Print out the answer.
 			System.err.format(
-					"Factorial of %,d is: %,d", count, handler.getFactorial());
+					"=======================\nFactorial of %,d is: %,d\n====================\n", count, handler.getFactorial());
 		} finally {
 			group.shutdownGracefully();
 		}
@@ -71,7 +71,7 @@ public class FactorialClient {
 		// Parse options.
 		String host = "localhost";// args[0];
 		int port = 8080;// Integer.parseInt(args[1]);
-		int count = 2000;// Integer.parseInt(args[2]);
+		int count = 20;// Integer.parseInt(args[2]);
 		if (count <= 0) {
 			throw new IllegalArgumentException("count must be a positive integer.");
 		}
