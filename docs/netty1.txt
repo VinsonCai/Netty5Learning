@@ -61,6 +61,11 @@ ChannelHandlerContext.fireChannelRead会调用DefaultChannelHandlerInvoker.invok
 然后就调用Handler去读数据了。
 
 
+在Factorial的Demo里面，BigIntegerDecoder继承自ByteToMessageDecoder，这个ByteToMessageDecoder会把数据读进来，然后调用由子类实现的decode方法，把数据分割成几组数据，然后调用HandlerContext去处理。
+
+
+
+
 
 VoidChannel是什么？
 

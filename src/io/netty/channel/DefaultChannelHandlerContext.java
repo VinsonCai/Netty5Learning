@@ -318,6 +318,7 @@ final class DefaultChannelHandlerContext extends DefaultAttributeMap implements 
 
 	@Override
 	public ChannelHandlerContext fireChannelRead(Object msg) {
+		logger.info(new Throwable());
 		DefaultChannelHandlerContext next = findContextInbound(MASK_CHANNEL_READ);
 		logger.info(" get an appreciate hanlder context:" + next);
 		next.invoker.invokeChannelRead(next, msg);

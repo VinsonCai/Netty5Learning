@@ -27,92 +27,91 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Handler for a client-side channel.  This handler maintains stateful
- * information which is specific to a certain channel using member variables.
- * Therefore, an instance of this handler can cover only one channel.  You have
- * to create a new handler instance whenever you create a new channel and insert
- * this handler to avoid a race condition.
+ * Handler for a client-side channel. This handler maintains stateful information which is specific to a certain channel
+ * using member variables. Therefore, an instance of this handler can cover only one channel. You have to create a new
+ * handler instance whenever you create a new channel and insert this handler to avoid a race condition.
  */
 public class FactorialClientHandler extends SimpleChannelInboundHandler<BigInteger> {
 
-    private static final Logger logger = Logger.getLogger(
-            FactorialClientHandler.class.getName());
+	private static final Logger logger = Logger.getLogger(
+			FactorialClientHandler.class.getName());
 
-    private ChannelHandlerContext ctx;
-    private int receivedMessages;
-    private int next = 1;
-    private final int count;
-    final BlockingQueue<BigInteger> answer = new LinkedBlockingQueue<BigInteger>();
+	private ChannelHandlerContext ctx;
+	private int receivedMessages;
+	private int next = 1;
+	private final int count;
+	final BlockingQueue<BigInteger> answer = new LinkedBlockingQueue<BigInteger>();
 
-    public FactorialClientHandler(int count) {
-        this.count = count;
-    }
+	public FactorialClientHandler(int count) {
+		this.count = count;
+	}
 
-    public BigInteger getFactorial() {
-        boolean interrupted = false;
-        for (;;) {
-            try {
-                BigInteger factorial = answer.take();
-                if (interrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return factorial;
-            } catch (InterruptedException e) {
-                interrupted = true;
-            }
-        }
-    }
+	public BigInteger getFactorial() {
+		boolean interrupted = false;
+		for (;;) {
+			try {
+				BigInteger factorial = answer.take();
+				if (interrupted) {
+					Thread.currentThread().interrupt();
+				}
+				return factorial;
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		}
+	}
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        this.ctx = ctx;
-        sendNumbers();
-    }
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) {
+		this.ctx = ctx;
+		sendNumbers();
+	}
 
-    @Override
-    public void messageReceived(ChannelHandlerContext ctx, final BigInteger msg) {
-        receivedMessages ++;
-        if (receivedMessages == count) {
-            // Offer the answer after closing the connection.
-            ctx.channel().close().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) {
-                    boolean offered = answer.offer(msg);
-                    assert offered;
-                }
-            });
-        }
-    }
+	@Override
+	public void messageReceived(ChannelHandlerContext ctx, final BigInteger msg) {
+		logger.info("receivedMessages ======" + receivedMessages);
+		receivedMessages++;
+		if (receivedMessages == count) {
+			// Offer the answer after closing the connection.
+			ctx.channel().close().addListener(new ChannelFutureListener() {
+				@Override
+				public void operationComplete(ChannelFuture future) {
+					boolean offered = answer.offer(msg);
+					assert offered;
+				}
+			});
+		}
+	}
 
-    @Override
-    public void exceptionCaught(
-            ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.log(
-                Level.WARNING,
-                "Unexpected exception from downstream.", cause);
-        ctx.close();
-    }
+	@Override
+	public void exceptionCaught(
+			ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		logger.log(
+				Level.WARNING,
+				"Unexpected exception from downstream.", cause);
+		ctx.close();
+	}
 
-    private void sendNumbers() {
-        // Do not send more than 4096 numbers.
-        ChannelFuture future = null;
-        for (int i = 0; i < 4096 && next <= count; i++) {
-            future = ctx.write(Integer.valueOf(next));
-            next++;
-        }
-        if (next <= count) {
-            assert future != null;
-            future.addListener(numberSender);
-        }
-        ctx.flush();
-    }
+	private void sendNumbers() {
+		// Do not send more than 4096 numbers.
+		ChannelFuture future = null;
+		for (int i = 0; i < 4096 && next <= count; i++) {
+			future = ctx.write(Integer.valueOf(next));
+			next++;
+		}
+		if (next <= count) {
+			assert future != null;
+			future.addListener(numberSender);
+		}
+		ctx.flush();
+	}
 
-    private final ChannelFutureListener numberSender = new ChannelFutureListener() {
-        @Override
-        public void operationComplete(ChannelFuture future) throws Exception {
-            if (future.isSuccess()) {
-                sendNumbers();
-            }
-        }
-    };
+	private final ChannelFutureListener numberSender = new ChannelFutureListener() {
+		@Override
+		public void operationComplete(ChannelFuture future) throws Exception {
+			if (future.isSuccess()) {
+				sendNumbers();
+			}
+		}
+	};
 }
