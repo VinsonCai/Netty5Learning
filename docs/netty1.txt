@@ -12,7 +12,9 @@ ChannelHandlerInvokerUtil调用invokeChannelReadNow。然后调用ChannelHandler
 在ServerBootStrap调用bind方法时，就会注册当通道可用的监听器。然后当通道启动时，就开始读。其实这里是有检查config().isAutoRead()的，因为默认是true，所以当通道active时就会自动读数据了。
 
 2. 当一个channel读的数据不够时，我们是可以让它再去读多一些的。这个如果是在多条线程的话，是怎样处理的？
-
+这个是由ByteToMessageDecoder控制的。就拿Factorial的Demo作为例子，它声明一个BigIntegerDecoder去继承ByteToMessageDecoder，然后其中在读取数据后，就会调用子类的decode方法把数据分为几段，然后对每一段调用HanlderContext的fireChannelRead方法，最终调用到FactorialClientHandler.messageReceived方法。
+在ByteToMessageDecoder里面有一个cumulation的ByteBuf对象，它负责把每次读进来的数据缓冲。比如我们要求的数据长度是5，而第一次读进来只有4，那么它就会累积下来，然后读第二次，比如这次读了3，然后它就会把它们累加起来有8个Byte,然后继续调用子害的decode方法。这个时候就可以解码出一个数据了。
+对于每一个channel是一条线程在处理，所以不会把这数据放在不同的线程处理。
 
 3. 
 
