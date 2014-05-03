@@ -785,6 +785,8 @@ public abstract class SingleThreadEventExecutor extends AbstractEventExecutor {
 
 	private void doStartThread() {
 		assert thread == null;
+		logger.info("doStartThread" + ", thread id:" + Thread.currentThread().getId());
+		logger.info(new Throwable());
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {

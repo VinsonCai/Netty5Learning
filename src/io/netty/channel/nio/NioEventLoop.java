@@ -294,8 +294,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
 	@Override
 	protected void run() {
+		logger.info(this + " endless select and read data." + ", thread id:" + Thread.currentThread().getId());
 		for (;;) {
-//			logger.info(this + " endless select and read data.");
 			oldWakenUp = wakenUp.getAndSet(false);
 			try {
 				if (hasTasks()) {

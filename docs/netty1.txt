@@ -67,6 +67,8 @@ ChannelHandlerContext.fireChannelRead会调用DefaultChannelHandlerInvoker.invok
 
 在ServerBootStrap里面自己定义了一个ServerBootstrapAcceptor，它是整个ChannelHandler的第一个，
 我们在声明ServerBootstrap对象的时候，给调用childHandler(new FactorialServerInitializer());这里并不是立马把它加到链表里面，而是在触发ServerBootstrapAcceptor.channelRead时才把它加到pipeLine里面。
+同时在channelRead的时候，会调用child.unsafe().register(child.newPromise());去注册读事件，然后启动线程去循环读。
+
 
 
 
