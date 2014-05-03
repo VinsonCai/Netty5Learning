@@ -100,7 +100,8 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
 		@Override
 		public void read() {
-			logger.info("NioUnsafe is reading..");
+			logger.info("NioUnsafe is reading.." + ", thread id:" + Thread.currentThread().getId());
+			logger.info(new Throwable());
 			final ChannelConfig config = config();
 			final ChannelPipeline pipeline = pipeline();
 			final ByteBufAllocator allocator = config.getAllocator();

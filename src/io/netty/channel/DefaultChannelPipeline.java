@@ -847,7 +847,7 @@ final class DefaultChannelPipeline implements ChannelPipeline {
 
 	@Override
 	public ChannelPipeline fireChannelRead(Object msg) {
-		logger.info("call the head of handler Context to read.");
+		logger.info("call the head of handler Context to read." + ": thread id:" + Thread.currentThread().getId());
 		head.fireChannelRead(msg);
 		return this;
 	}

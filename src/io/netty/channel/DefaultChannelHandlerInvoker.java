@@ -148,7 +148,7 @@ public class DefaultChannelHandlerInvoker implements ChannelHandlerInvoker {
 		}
 
 		if (executor.inEventLoop()) {
-			logger.info("executor.inEventLoop()...");
+			logger.info("executor.inEventLoop()..." + ": thread id:" + Thread.currentThread().getId());
 			invokeChannelReadNow(ctx, msg);
 		} else {
 			logger.info("going to safeExecuteInbound(Runnable)");

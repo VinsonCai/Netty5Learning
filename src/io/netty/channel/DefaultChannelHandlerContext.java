@@ -320,7 +320,7 @@ final class DefaultChannelHandlerContext extends DefaultAttributeMap implements 
 	public ChannelHandlerContext fireChannelRead(Object msg) {
 		logger.info(new Throwable());
 		DefaultChannelHandlerContext next = findContextInbound(MASK_CHANNEL_READ);
-		logger.info(" get an appreciate hanlder context:" + next);
+		logger.info(" get an appreciate hanlder context:" + next + ": thread id:" + Thread.currentThread().getId());
 		next.invoker.invokeChannelRead(next, msg);
 		return this;
 	}

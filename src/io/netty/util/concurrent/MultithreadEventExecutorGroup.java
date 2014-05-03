@@ -128,6 +128,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
 	public EventExecutor next() {
 		EventExecutor eventExecutor = children[Math.abs(childIndex.getAndIncrement() % children.length)];
 		logger.info(this + " next eventExecutor is:" + eventExecutor);
+		logger.info(new Throwable());
 		return eventExecutor;
 	}
 

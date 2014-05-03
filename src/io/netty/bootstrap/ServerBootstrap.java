@@ -270,7 +270,7 @@ public final class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, Se
 		@Override
 		@SuppressWarnings("unchecked")
 		public void channelRead(ChannelHandlerContext ctx, Object msg) {
-			logger.debug("channel read...");
+			logger.info("channel read..." + ", thread id:" + Thread.currentThread().getId());
 			Channel child = (Channel) msg;
 
 			child.pipeline().addLast(childHandler);
