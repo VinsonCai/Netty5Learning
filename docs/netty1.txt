@@ -80,10 +80,6 @@ HandlerContext是一个很重要的类，在创建它是传进ChannelPipeline，
 
 
 
-VoidChannel是什么？
-
-AbstractNioMessageChannel和AbstractNioByteChannel的区别是什么？好像一个是Server的读数据，另一个是Client端的。
-
 
 
 
