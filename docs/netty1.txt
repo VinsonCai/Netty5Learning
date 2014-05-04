@@ -79,6 +79,8 @@ HandlerContext是一个很重要的类，在创建它是传进ChannelPipeline，
 
 在DefaultChannelPipeline里面声明了一个HeadHandler，这是ChannelPipeline里面第一个Hanlder，它的作用就是调用 unsafe.beginRead()，最终调用到AbstractNioUnsafe.doBeginRead它只是确保了有在监听NIO读事件。
 
+VoidChannel是什么？
+就目前来看它并没有特别的作用，只是作为一个无用的Handler，表示初始化失败。
 
 
 
