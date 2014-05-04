@@ -77,7 +77,7 @@ HandlerContext是一个很重要的类，在创建它是传进ChannelPipeline，
 以Factorial为例。它是有三个Handler：ZlibCodecFactory.newZlibDecoder， BigIntegerDecoder和FactorialClientHandler。
 当数据从ChannelPipiline开始，会先启用zlibDecoder，然后ZlibDecoder会在它channelRead时调用BigIntegerDecoder的channelRead，然后又会调用到FactorialClientHandler的channelRead
 
-
+在DefaultChannelPipeline里面声明了一个HeadHandler，这是ChannelPipeline里面第一个Hanlder，它的作用就是调用 unsafe.beginRead()，最终调用到AbstractNioUnsafe.doBeginRead它只是确保了有在监听NIO读事件。
 
 
 
