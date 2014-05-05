@@ -85,5 +85,6 @@ VoidChannel是什么？
 Q：AbstractNioMessageChannel和AbstractNioByteChannel的区别是什么？好像一个是Server的读数据，另一个是Client端的?
 A：确实如此。在Factorial Demo里面，我们有一句：.channel(NioServerSocketChannel.class)，它让ServerBootstrap的ServerBootstrapChannelFactory去创建NioServerSocketChannel的实例。NioServerSocketChannel是AbstractNioMessageChannel的子类。然后它作为第一个去获取Selector的Handler。
 
-
+Q: NIO和OIO的切换?
+A: 主要改两个地方就可以切换。在Bootstrap的group函数传入OioEventGroup，然后在Channel那里传入对应的OioSocketChannel或者OioSeverSocketChannel。然后整个程序其它地方都不需要改变。
 
