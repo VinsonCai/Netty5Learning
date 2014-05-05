@@ -1,4 +1,4 @@
-AbstractNioMessageChannel和AbstractNioByteChannel的区别是什么？好像一个是Server的读数据，另一个是Client端的。
+
 
 Promise的具体作用
 
@@ -7,5 +7,7 @@ NIO和OIO的切换
 ByteBuf管理
 
 UDP和TCP的切换
+
+Buffer的实现 
 
 
