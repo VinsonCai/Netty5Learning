@@ -6,7 +6,6 @@ Promise的具体作用
 
 ByteBuf管理
 
-UDP和TCP的切换
 
 Buffer的实现 
 

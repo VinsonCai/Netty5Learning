@@ -88,3 +88,8 @@ A：确实如此。在Factorial Demo里面，我们有一句：.channel(NioServe
 Q: NIO和OIO的切换?
 A: 主要改两个地方就可以切换。在Bootstrap的group函数传入OioEventGroup，然后在Channel那里传入对应的OioSocketChannel或者OioSeverSocketChannel。然后整个程序其它地方都不需要改变。
 
+Q: UDP和TCP的切换
+A: UDP是没有Server的，所以在做一个Server的时候，只能用Bootstrap而不是ServerBootstrap。在Bootstrap的channel函数就传入一个NioDatagramChannel或者OioDatagramChannel。然后按需要配置它的option，如.option(ChannelOption.SO_BROADCAST, true)。
+
+
+
