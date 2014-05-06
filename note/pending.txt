@@ -1,7 +1,4 @@
-
-
 Promise的具体作用
-
 
 
 ByteBuf管理
@@ -9,4 +6,4 @@ ByteBuf管理
 
 Buffer的实现 
 
-
+高可扩展性的实现
