@@ -91,5 +91,8 @@ A: 主要改两个地方就可以切换。在Bootstrap的group函数传入OioEve
 Q: UDP和TCP的切换
 A: UDP是没有Server的，所以在做一个Server的时候，只能用Bootstrap而不是ServerBootstrap。在Bootstrap的channel函数就传入一个NioDatagramChannel或者OioDatagramChannel。然后按需要配置它的option，如.option(ChannelOption.SO_BROADCAST, true)。
 
+Q: Buffer的实现 ?
+A: 在NioByteUnsafe的read方法里面，先获取一个ByteBufAllocator，然后给它分配一个ByteBuffer，追踪下去会发现如果没有sun.Unsafe存在的话，就会用它去创建，其实就是调用java的nio里面的ByteBuffer去创建一个DirectByteBuffer。
+
 
 
