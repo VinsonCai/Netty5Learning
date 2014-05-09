@@ -94,9 +94,7 @@ A: UDP是没有Server的，所以在做一个Server的时候，只能用Bootstra
 Q: Buffer的实现 ?
 A: 在NioByteUnsafe的read方法里面，先获取一个ByteBufAllocator，然后给它分配一个ByteBuffer，追踪下去会发现如果没有sun.Unsafe存在的话，就会用它去创建，其实就是调用java的nio里面的ByteBuffer去创建一个DirectByteBuffer。
 
-
-
-
-
+AbstractByteBuf: 负责基本的ByteBuf处理，它只是处理一些基本的坐标之类的，不进行具体的数据处理。具体的数据处理交给了它的子类。
+EmptyByteBuf： 属于空对象模式的应用。if (initialCapacity == 0 && maxCapacity == 0) {return emptyBuf;
 
 
