@@ -98,3 +98,5 @@ AbstractByteBuf: 负责基本的ByteBuf处理，它只是处理一些基本的�
 EmptyByteBuf： 属于空对象模式的应用。if (initialCapacity == 0 && maxCapacity == 0) {return emptyBuf;
 
 
+DefaultResourceLeak: 它继承于“幽灵引用”,用于检测内存泄漏。
+ResourceLeakDetector： 用于检测内存泄漏。
