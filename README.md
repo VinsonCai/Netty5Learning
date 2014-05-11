@@ -5,3 +5,6 @@ Netty5Learning
 
 1. [基本学习策略](https://github.com/VinsonCai/Netty5Learning/blob/master/note/study_agenda.md)
 
+
+[学习过程的粗稿](https://github.com/VinsonCai/Netty5Learning/blob/master/docs/netty1.txt)
+
