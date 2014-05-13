@@ -48,7 +48,8 @@ MultithreadEventLoopGroup在创建线程的时候，是根据系统的处理器�
  1）如果没有延时任务（ScheduledFutureTask），就去taskQueue里面获取（这里的taskQueue是一个BlockingQueue，所以这里有可能阻塞到有任务来时）
  2）如果有延时任务，就获取延时的时间delayNanos（用纳秒表示），如果delayNanos>0然后就尝试在delayNanos的时间内从taskQueue里面获取任务。不然就直接在taskQueue里面poll().
    2.1)如果这两种情况都没有获取到任务，就从延时任务列表里面取一个任务放到taskQueue里面。然后把它取出来返回回去。这里如果还是为空，就继续前面的操作。
-   
+Update: 这个理解是错的。跟UI线程比较相似的是Eventloop的inEventloop方法。
+
    
 每次在判断是否executor.inEventLoop(),如果是就马上执行，不然就尝试safeExecuteOutbound（Runnable），该函数会调用 executor.execute(task)。
 
@@ -100,3 +101,5 @@ EmptyByteBuf： 属于空对象模式的应用。if (initialCapacity == 0 && max
 
 DefaultResourceLeak: 它继承于“幽灵引用”,用于检测内存泄漏。
 ResourceLeakDetector： 用于检测内存泄漏。
+
+
