@@ -7,3 +7,6 @@ ByteBuf管理
 Buffer的实现 
 
 高可扩展性的实现
+
+NioByteUnsafe的作用是什么 ？为什么 它是在AbstractNioByteChannel里面？
+
