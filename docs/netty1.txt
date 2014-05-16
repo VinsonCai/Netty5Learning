@@ -103,3 +103,5 @@ DefaultResourceLeak: 它继承于“幽灵引用”,用于检测内存泄漏。
 ResourceLeakDetector： 用于检测内存泄漏。
 
 DefaultChannelGroup 是一个管理一组Channel的类，比如可以很方便地对一组Channel进行写消息。
+
+NioByteUnsafe是AbstractNioByteChannel的内部类，并有一个方法newUnsafe把它暴露出去。然后由Eventloop去取得unsafe，然后对它进行操作。这样的好处还不大清楚。
